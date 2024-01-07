@@ -37,6 +37,8 @@ type Link struct {
 
 	FileProperties   *FileProperties
 	FolderProperties *FolderProperties
+
+	XAttr string
 }
 
 type LinkState int
@@ -148,6 +150,32 @@ func (l Link) GetSessionKey(nodeKR *crypto.KeyRing) (*crypto.SessionKey, error) 
 	}
 
 	return key, nil
+}
+
+func (l Link) GetDecXAttrString(addrKR, nodeKR *crypto.KeyRing) (*RevisionXAttrCommon, error) {
+	if l.XAttr == "" {
+		return nil, nil
+	}
+
+	// decrypt the modification time and size
+	XAttrMsg, err := crypto.NewPGPMessageFromArmored(l.XAttr)
+	if err != nil {
+		return nil, err
+	}
+
+	decXAttr, err := nodeKR.Decrypt(XAttrMsg, addrKR, crypto.GetUnixTime())
+	if err != nil {
+		return nil, err
+	}
+
+	var data RevisionXAttr
+	err = json.Unmarshal(decXAttr.Data, &data)
+	if err != nil {
+		// TODO: if Unmarshal fails, maybe it's because the file system is missing the field?
+		return nil, err
+	}
+
+	return &data.Common, nil
 }
 
 type FileProperties struct {
