@@ -48,6 +48,8 @@ func (c *Client) GetVolumeEvent(ctx context.Context, volumeID, eventID string) (
 			return DriveEvent{}, err
 		}
 
+		event.EventID = next.EventID
+		event.Refresh = event.Refresh || next.Refresh
 		event.Events = append(event.Events, next.Events...)
 	}
 
@@ -68,6 +70,8 @@ func (c *Client) GetShareEvent(ctx context.Context, shareID, eventID string) (Dr
 			return DriveEvent{}, err
 		}
 
+		event.EventID = next.EventID
+		event.Refresh = event.Refresh || next.Refresh
 		event.Events = append(event.Events, next.Events...)
 	}
 
