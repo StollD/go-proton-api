@@ -28,6 +28,11 @@ type BlockUploadInfo struct {
 	Size         int64
 	EncSignature string
 	Hash         string
+	Verifier     BlockVerification
+}
+
+type BlockVerification struct {
+	Token string
 }
 
 type BlockUploadLink struct {

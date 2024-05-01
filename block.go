@@ -36,6 +36,7 @@ func (c *Client) UploadBlock(ctx context.Context, bareURL, token string, block i
 	return c.do(ctx, func(r *resty.Request) (*resty.Response, error) {
 		return r.
 			SetHeader("pm-storage-token", token).
+			SetHeader("Cache-Control", "no-cache, no-store, max-age=0").
 			SetMultipartField("Block", "blob", "application/octet-stream", block).
 			Post(bareURL)
 	})
